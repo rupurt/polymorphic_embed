@@ -244,6 +244,12 @@ defmodule PolymorphicEmbed do
   @impl true
   def load(nil, _loader, _params), do: {:ok, nil}
 
+  def load(data, loader, params) when is_bitstring(data) do
+    data
+    |> Jason.decode!()
+    |> load(loader, params)
+  end
+
   def load(data, _loader, %{types_metadata: types_metadata, type_field: type_field}) do
     case do_get_polymorphic_module_from_map(data, type_field, types_metadata) do
       nil -> raise_cannot_infer_type_from_data(data)
